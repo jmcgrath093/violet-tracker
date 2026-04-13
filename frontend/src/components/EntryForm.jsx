@@ -20,10 +20,6 @@ const EntryForm = ({ onEntryAdded, initialData, onCancel }) => {
   const [suggestedTags, setSuggestedTags] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Ref to track if we're on the first render to avoid clearing subItem
-  const isFirstRender = useRef(true);
-
-  useEffect(() => {
     // Load tags for autocomplete when type changes
     const loadTags = async () => {
       try {
@@ -34,12 +30,6 @@ const EntryForm = ({ onEntryAdded, initialData, onCancel }) => {
       }
     };
     loadTags();
-    
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-    } else {
-      setSubItem(''); // Reset subitem when type changes by user
-    }
   }, [type]);
 
   const handleSubmit = async (e) => {
@@ -85,7 +75,10 @@ const EntryForm = ({ onEntryAdded, initialData, onCancel }) => {
     <form className="glass-panel" onSubmit={handleSubmit} style={isEditMode ? { margin: '0 0 1rem 0' } : {}}>
       <div className="form-group">
         <label htmlFor="type">Log Type</label>
-        <select id="type" value={type} onChange={(e) => setType(e.target.value)}>
+        <select id="type" value={type} onChange={(e) => {
+          setType(e.target.value);
+          setSubItem('');
+        }}>
           <option value="Activity">🏃 Activity</option>
           <option value="Food">🍽️ Food</option>
           <option value="Medical">🩺 Medical</option>
