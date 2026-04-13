@@ -36,6 +36,16 @@ export const updateEntry = async (id, entryData) => {
   return response.json();
 };
 
+export const deleteEntry = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/entries/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete entry');
+  }
+  return response.json();
+};
+
 export const fetchTags = async (type) => {
   const response = await fetch(`${API_BASE_URL}/tags?type=${encodeURIComponent(type)}`);
   if (!response.ok) {

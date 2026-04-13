@@ -1,9 +1,37 @@
 import { useState } from 'react';
-import { Utensils, Activity, Stethoscope, Edit2 } from 'lucide-react';
+import { Utensils, Activity, Stethoscope, Edit2, Trash2 } from 'lucide-react';
 import EntryForm from './EntryForm';
+import { deleteEntry } from '../api';
 
 const TimelineItem = ({ entry, onEntryUpdated }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Determine icon and color class based on type
+  let IconPrefix = Activity;
+  let typeClass = 'type-activity';
+
+  if (entry.type === 'Food') {
+    IconPrefix = Utensils;
+    typeClass = 'type-food';
+  } else if (entry.type === 'Medical') {
+    IconPrefix = Stethoscope;
+    typeClass = 'type-medical';
+  }
+
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to permanently delete this ${entry.type} entry?`)) {
+      setIsDeleting(true);
+      try {
+        await deleteEntry(entry.id);
+        if (onEntryUpdated) onEntryUpdated();
+      } catch (err) {
+        console.error("Failed to delete entry", err);
+        alert("Could not delete entry.");
+        setIsDeleting(false);
+      }
+    }
+  };
 
   if (isEditing) {
     return (
@@ -20,25 +48,13 @@ const TimelineItem = ({ entry, onEntryUpdated }) => {
     );
   }
 
-  // Determine icon and color class based on type
-  let IconPrefix = Activity;
-  let typeClass = 'type-activity';
-
-  if (entry.type === 'Food') {
-    IconPrefix = Utensils;
-    typeClass = 'type-food';
-  } else if (entry.type === 'Medical') {
-    IconPrefix = Stethoscope;
-    typeClass = 'type-medical';
-  }
-
   const formattedTime = new Intl.DateTimeFormat('en-US', {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(new Date(entry.timestamp));
 
   return (
-    <div className="timeline-item" data-type={entry.type}>
+    <div className="timeline-item" data-type={entry.type} style={{ opacity: isDeleting ? 0.5 : 1 }}>
       <div className="item-content">
         <div className="item-header">
           <div>
@@ -54,10 +70,19 @@ const TimelineItem = ({ entry, onEntryUpdated }) => {
             {formattedTime}
             <button 
               onClick={() => setIsEditing(true)} 
-              style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginLeft: '0.5rem', display: 'flex' }}
+              disabled={isDeleting}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginLeft: '0.8rem', display: 'flex' }}
               title="Edit"
             >
               <Edit2 size={14} />
+            </button>
+            <button 
+              onClick={handleDelete} 
+              disabled={isDeleting}
+              style={{ background: 'transparent', border: 'none', color: 'var(--type-food)', cursor: 'pointer', marginLeft: '0.4rem', display: 'flex' }}
+              title="Delete"
+            >
+              <Trash2 size={14} />
             </button>
           </div>
         </div>

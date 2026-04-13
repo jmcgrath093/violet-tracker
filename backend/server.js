@@ -62,6 +62,19 @@ app.put('/api/entries/:id', (req, res) => {
   );
 });
 
+// Delete an entry
+app.delete('/api/entries/:id', (req, res) => {
+  const { id } = req.params;
+  
+  db.run('DELETE FROM entries WHERE id = ?', [id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ success: true, changes: this.changes });
+  });
+});
+
 // Get unique tags for a type to provide autocomplete suggestions
 app.get('/api/tags', (req, res) => {
   const { type } = req.query;
