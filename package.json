@@ -1,0 +1,12 @@
+{
+  "name": "violet-tracker",
+  "version": "1.0.0",
+  "description": "Root package to run both frontend and backend concurrently",
+  "scripts": {
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "start": "concurrently \"cd backend && node server.js\" \"cd frontend && npm run dev -- --host\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
