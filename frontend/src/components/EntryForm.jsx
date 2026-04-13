@@ -19,7 +19,7 @@ const EntryForm = ({ onEntryAdded, initialData, onCancel }) => {
   const [notes, setNotes] = useState(initialData?.notes || '');
   const [suggestedTags, setSuggestedTags] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+  useEffect(() => {
     // Load tags for autocomplete when type changes
     const loadTags = async () => {
       try {
